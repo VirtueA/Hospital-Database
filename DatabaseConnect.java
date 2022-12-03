@@ -82,7 +82,9 @@ public class DatabaseConnect {
         PreparedStatement retrieveMaleDocs = con.prepareStatement("SELECT doctorID, FullName FROM Doctors Where gender = ?");
         retrieveMaleDocs.setString(1, gender);
         ResultSet result = retrieveMaleDocs.executeQuery();
-
+        
+        //you can remove this while loop i was just using it for testing
+        //this while loop is how you'll have to process the data
         while(result.next()) {
             String doctorID = result.getString("doctorID");
             String FullName = result.getString("FullName");
@@ -90,6 +92,8 @@ public class DatabaseConnect {
             //printing results
             System.out.println(doctorID + "|" + FullName);
         }
+        
+        
         return result;
     }
 
@@ -97,12 +101,16 @@ public class DatabaseConnect {
     private static ResultSet numBloodTypes(Connection con) throws SQLException {
         PreparedStatement bloodTypes = con.prepareStatement("SELECT BloodType, COUNT(*) FROM MedicalRecord GROUP BY BloodType");
         ResultSet results = bloodTypes.executeQuery();
+        
+        //you can remove this while loop i was just using it for testing
+        //this while loop is how you'll have to process the data
         while(results.next()) {
             String bloodType = results.getString("BloodType");
             int count = results.getInt("COUNT(*)");
 
             System.out.println(bloodType + " | " + count);
         }
+        
         return results;
     }
 
@@ -111,6 +119,10 @@ public class DatabaseConnect {
         PreparedStatement nursePatients = con.prepareStatement("SELECT N.FullName, N.DeptName, p.PatientName, M.CurrentDiagnosis FROM nurses as N INNER JOIN Patients AS p ON N.PatientID = p.PatientID INNER JOIN MedicalRecord AS M ON P.PatientID = M.PatientID");
         ResultSet results = nursePatients.executeQuery();
         System.out.println("Nurse Name | Department | Patient Name | Patient Diagnosis");
+        
+        
+        //you can remove this while loop i was just using it for testing
+        //this while loop is how you'll have to process the data
         while(results.next()) {
             String nurse = results.getString("N.FullName");
             String department = results.getString("N.DeptName");
