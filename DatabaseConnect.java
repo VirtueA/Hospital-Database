@@ -1,5 +1,3 @@
-import com.mysql.cj.x.protobuf.MysqlxPrepare;
-
 import java.sql.*;
 import java.util.Date;
 
@@ -34,14 +32,18 @@ public class DatabaseConnect {
 
         //numBloodTypes(con);
 
-        NursesPatients(con);
+        //NursesPatients(con);
+
+        //doctorsWorking(con, "2022/11/14");
+
+        //docSpecialization(con, "pulmonology");
 
         con.close();
     }
 
     //function to insert a patient
     //date needs to be in form MM/DD/YYYY
-    private static void insertPatient(Connection con, String name, String SSN, String ID, String date) throws SQLException {
+    public static void insertPatient(Connection con, String name, String SSN, String ID, String date) throws SQLException {
         Date patientDOB = new Date(date);
         java.sql.Date sqlDate = new java.sql.Date(patientDOB.getTime());
         PreparedStatement ptInsert = con.prepareStatement("INSERT INTO PATIENTS VALUES (?, ?, ?, ?)");
@@ -54,13 +56,13 @@ public class DatabaseConnect {
 
     //function to delete a patient
     //deletes patient by finding the patient's ssn
-    private static void deletePatient(Connection con, String SSN) throws SQLException {
+    public static void deletePatient(Connection con, String SSN) throws SQLException {
         PreparedStatement ptDelete = con.prepareStatement("DELETE FROM PATIENTS WHERE SSN = ?");
         ptDelete.setString(1, SSN);
         ptDelete.execute();
     }
 
-    private static void updateDoctorPhone(Connection con, String docID, String newPhoneNum) throws SQLException {
+    public static void updateDoctorPhone(Connection con, String docID, String newPhoneNum) throws SQLException {
         PreparedStatement updateDoctorPhone = con.prepareStatement("UPDATE DOCTORS SET PhoneNum = ? where doctorID = ? ");
         updateDoctorPhone.setString(1, newPhoneNum);
         updateDoctorPhone.setString(2, docID);
@@ -68,7 +70,7 @@ public class DatabaseConnect {
     }
 
     //return all the doctors with a given amount of years of experience
-    private static ResultSet retrieveDoctorsExpereience(Connection con, int yearsExperience) throws SQLException {
+    public static ResultSet retrieveDoctorsExpereience(Connection con, int yearsExperience) throws SQLException {
         PreparedStatement retrieveDocs = con.prepareStatement("Select DoctorID, FullName, DeptName FROM doctors Where doctors.YrsExperience >= ?");
         retrieveDocs.setInt(1, yearsExperience);
         //getting the result set
@@ -78,52 +80,40 @@ public class DatabaseConnect {
 
     }
 
-    private static ResultSet GenderDocs(Connection con, String gender) throws SQLException {
+    public static ResultSet GenderDocs(Connection con, String gender) throws SQLException {
         PreparedStatement retrieveMaleDocs = con.prepareStatement("SELECT doctorID, FullName FROM Doctors Where gender = ?");
         retrieveMaleDocs.setString(1, gender);
         ResultSet result = retrieveMaleDocs.executeQuery();
-        
-        //you can remove this while loop i was just using it for testing
-        //this while loop is how you'll have to process the data
-        while(result.next()) {
+
+        while (result.next()) {
             String doctorID = result.getString("doctorID");
             String FullName = result.getString("FullName");
 
             //printing results
             System.out.println(doctorID + "|" + FullName);
         }
-        
-        
         return result;
     }
 
     //counts the number of patients with certain bloodtypes
-    private static ResultSet numBloodTypes(Connection con) throws SQLException {
+    public static ResultSet numBloodTypes(Connection con) throws SQLException {
         PreparedStatement bloodTypes = con.prepareStatement("SELECT BloodType, COUNT(*) FROM MedicalRecord GROUP BY BloodType");
         ResultSet results = bloodTypes.executeQuery();
-        
-        //you can remove this while loop i was just using it for testing
-        //this while loop is how you'll have to process the data
-        while(results.next()) {
+        while (results.next()) {
             String bloodType = results.getString("BloodType");
             int count = results.getInt("COUNT(*)");
 
             System.out.println(bloodType + " | " + count);
         }
-        
         return results;
     }
 
     //shows the name, department, patient name, and patient diagnosis for every nurse in the hospital
-    private static ResultSet NursesPatients(Connection con) throws SQLException {
+    public static ResultSet NursesPatients(Connection con) throws SQLException {
         PreparedStatement nursePatients = con.prepareStatement("SELECT N.FullName, N.DeptName, p.PatientName, M.CurrentDiagnosis FROM nurses as N INNER JOIN Patients AS p ON N.PatientID = p.PatientID INNER JOIN MedicalRecord AS M ON P.PatientID = M.PatientID");
         ResultSet results = nursePatients.executeQuery();
         System.out.println("Nurse Name | Department | Patient Name | Patient Diagnosis");
-        
-        
-        //you can remove this while loop i was just using it for testing
-        //this while loop is how you'll have to process the data
-        while(results.next()) {
+        while (results.next()) {
             String nurse = results.getString("N.FullName");
             String department = results.getString("N.DeptName");
             String patientName = results.getString("p.PatientName");
@@ -134,6 +124,43 @@ public class DatabaseConnect {
         return results;
     }
 
+    //retrieve names and doctorids of doctors working on a given day
+    public static ResultSet doctorsWorking(Connection con, String date) throws SQLException {
+        Date patientDOB = new Date(date);
+        java.sql.Date sqlDate = new java.sql.Date(patientDOB.getTime());
+        PreparedStatement docsWorking = con.prepareStatement("SELECT Schedule.StartTime, Doctors.DoctorID, Doctors.FullName FROM (Doctors JOIN Schedule ON Doctors.DoctorID = Schedule.DoctorID) WHERE Schedule.Date = ?" +
+                " GROUP BY Schedule.StartTime, Doctors.DoctorID, Doctors.FullName");
+        docsWorking.setDate(1, sqlDate);
+        ResultSet results = docsWorking.executeQuery();
 
+        while(results.next()) {
+            java.sql.Time startTime = results.getTime("Schedule.StartTime");
+            String doctorID = results.getString("Doctors.DoctorID");
+            String fullName = results.getString("Doctors.FullName");
+
+            System.out.println(startTime + " | " + doctorID + " | " + fullName);
+        }
+
+        return results;
+    }
+
+    //retrieve doctors with a certain specialization, grouped by years in specialization
+    public static ResultSet docSpecialization(Connection con, String specialization) throws SQLException {
+        PreparedStatement getDocSpecialization = con.prepareStatement("Select Doctors.YrsExperience, Doctors.DoctorID, Doctors.FullName, COUNT(*) FROM (Doctors JOIN Specialization ON Doctors.DoctorID = Specialization.DoctorID) " +
+                "WHERE Specialization.Specialization = ? GROUP BY Doctors.YrsExperience, Doctors.DoctorID, Doctors.FullName");
+        getDocSpecialization.setString(1, specialization);
+        ResultSet results = getDocSpecialization.executeQuery();
+
+        while(results.next()) {
+            int yrsExp = results.getInt("Doctors.YrsExperience");
+            String docID = results.getString("Doctors.DoctorID");
+            String fName = results.getString("Doctors.FullName");
+            int count = results.getInt("COUNT(*)");
+
+            System.out.println(yrsExp + " | " + docID + " | " + fName + " | " + count);
+        }
+        return results;
+    }
 
 }
+
