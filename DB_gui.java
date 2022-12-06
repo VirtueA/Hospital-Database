@@ -8,11 +8,14 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 
 //main gui class
-class DB_gui implements ActionListener {
+class DB_gui implements ActionListener{
  	
+	
 	//create frame, panels, and buttons
 	JFrame mainframe;
 	JPanel input = new JPanel();
@@ -23,9 +26,9 @@ class DB_gui implements ActionListener {
     JButton add = new JButton("ADD PATIENT");
     JButton delete = new JButton("DELETE PATIENT");
     JButton find = new JButton("FIND PATIENT");
-    JButton assign = new JButton("ASSIGN PATIENT");
+    JButton blood = new JButton("GET BLOODTYPES");
     JButton docSpec = new JButton("SEARCH BY SPECIALIZATION");
-    JButton docSched = new JButton("DOCTOR'S SCHEDULE");
+    JButton nurse = new JButton("SHOW NURSE INFO");
     JButton date = new JButton("DOCTORS ON SCHEDULE");
     JButton quit = new JButton("Quit");
     
@@ -52,9 +55,9 @@ class DB_gui implements ActionListener {
 	     options.add(find);
 	     options.add(delete);
 	     options.add(docSpec);
-	     options.add(assign);
-	     options.add(docSched);
 	     options.add(date);
+	     options.add(nurse);
+	     options.add(blood);	     
 	     
 	     delete.setBackground(Color.red);
 	     exit.add(quit);
@@ -64,9 +67,9 @@ class DB_gui implements ActionListener {
 	     add.addActionListener(this);
 	     delete.addActionListener(this);
 	     find.addActionListener(this);
-	     assign.addActionListener(this);
+	     blood.addActionListener(this);
 	     docSpec.addActionListener(this);
-	     docSched.addActionListener(this);
+	     nurse.addActionListener(this);
 	     date.addActionListener(this);
 	     quit.addActionListener(this);
 	     
@@ -74,9 +77,9 @@ class DB_gui implements ActionListener {
 	     add.setActionCommand("insert");
 	     delete.setActionCommand("delete");
 	     find.setActionCommand("find");
-	     assign.setActionCommand("assign");
+	     blood.setActionCommand("blood");
 	     docSpec.setActionCommand("spec");
-	     docSched.setActionCommand("sched");
+	     nurse.setActionCommand("nurse");
 	     date.setActionCommand("date");
 	     quit.setActionCommand("quit");
 	     
@@ -92,6 +95,9 @@ class DB_gui implements ActionListener {
 	//event listener for the buttons
 	@Override
 	public void actionPerformed(ActionEvent click){
+		String url = "jdbc:mysql://localhost:3306/hospitaldb";
+	    Connection con = DriverManager.getConnection(url, "root", "admin");
+		
 		
 		mainframe.remove(options);//remove the buttons at the top
 		mainframe.remove(pic);//remove the previous picture
@@ -127,8 +133,6 @@ class DB_gui implements ActionListener {
 	    JTextField input_4;
 
 	    
-	    
-	    
 	  //get the button that was pressed
 		String buttonPressed = click.getActionCommand();
 	    
@@ -147,7 +151,7 @@ class DB_gui implements ActionListener {
 	    		System.out.println(e);
 	    	}
 	    }
-	    else if(buttonPressed == "insert" || buttonPressed == "find" || buttonPressed == "delete")
+	    else if(buttonPressed == "insert")
 	    {
 	    	//text field labels
 			JLabel name = new JLabel("Enter the patient's full name");
@@ -168,38 +172,38 @@ class DB_gui implements ActionListener {
 	    	input.add(dob); 	input.add(input_4);
 	    	
 	    	//change button view depending on the command and execute the command
-	    	if(buttonPressed == "insert")
-	    	{
-	    		command.setText("INSERT");
-	    		command.setActionCommand("inserted");
-	    	}
-	    	else if(buttonPressed == "delete")
-	    	{
-	    		command.setText("DELETE");
-	    		command.setActionCommand("deleted");
-	    	}
-	    	else if(buttonPressed == "find")
-	    	{
-	    		command.setText("FIND");
-	    		command.setActionCommand("found");
-	    	}
+    		command.setText("INSERT");
+    		command.setActionCommand("inserted");
 	    	
 	    	//add buttons
 	    	input.add(command);
 	    	exit.add(back);
 	    }
-	    else if(buttonPressed == "assign") {
+	    else if (buttonPressed == "find")
+	    {
 	    	//text field labels and text fields
 	    	JLabel id = new JLabel("Enter the patient's ID");
-	    	input_1 = new JTextField("Enter a 9-digit number", 25);
-	    	JLabel years = new JLabel("Minimum years of doctor experience");
-	    	input_2 = new JTextField(2);
+	    	input_1 = new JTextField("Enter a 10-digit number", 25);
 	    	
 	    	input.add(id);		input.add(input_1);
-	    	input.add(years); 	input.add(input_2);
 	    	
-	    	command.setText("ASSIGN");
-	    	command.setActionCommand("assigned");
+	    	command.setText("FIND");
+	    	command.setActionCommand("found");
+	    		    	
+	    	//add buttons
+	    	input.add(command);
+	    	exit.add(back);
+	    }
+	    else if (buttonPressed == "delete")
+	    {
+	    	//text field labels and text fields
+	    	JLabel ssn = new JLabel("Enter the patient's SSN");
+	    	input_1 = new JTextField("Enter a 9-digit number", 25);
+	    	
+	    	input.add(ssn);		input.add(input_1);
+	    	
+	    	command.setText("DELETE");
+	    	command.setActionCommand("deleted");
 	    	
 	    	//add buttons
 	    	input.add(command);
@@ -219,24 +223,11 @@ class DB_gui implements ActionListener {
 	    	input.add(command);
 	    	exit.add(back);
 	    }
-	    else if(buttonPressed == "sched") {
-	    	//text field labels and text fields
-	    	JLabel schedL = new JLabel("Enter the doctor's ID");
-	    	input_1 = new JTextField("Enter a 9-digit number", 25);
-	    	input.add(schedL);
-	    	input.add(input_1);
-	    	command.setText("DISPLAY SCHEDULE");
-	    	command.setActionCommand("schedFound");
-	    	
-	    	//add buttons
-	    	input.add(command);
-	    	exit.add(back);
-	    }
 	    else if(buttonPressed == "date") {
 	    	//text field labels and text fields
-	    	JLabel dateL = new JLabel("Enter the desired date");
+	    	JLabel date = new JLabel("Enter the desired date");
 	    	input_1 = new JTextField("YYYY-MM-DD", 25);
-	    	input.add(dateL);
+	    	input.add(date);
 	    	input.add(input_1);
 	    	command.setText("SHOW DOCTORS ON STAFF");
 	    	command.setActionCommand("dateFound");
@@ -248,7 +239,30 @@ class DB_gui implements ActionListener {
 	    else {
 	    	mainframe.remove(input);
 	    	JTextArea results = new JTextArea();
-	    	results.append("SUCCESS!");//PLACEHOLDER FOR ACTUAL RESULTS; WILL CALL FUNCTION BASED ON THE BUTTON CLICKED AND DISPLAY RESULTS*************** 
+	    	switch (buttonPressed) {
+	    	case "inserted":
+	    		results.append(DatabaseConnect.insertPatient(con, input_1.getText(), input_2.getText(), input_3.getText(), input_4.getText()));
+	    	break;
+	    	case "deleted":
+	    		results.append(DatabaseConnect.deletePatient(con, input_1.getText()));
+	    	break;
+	    	case "found":
+	    		results.append(DatabaseConnect.findPatient(con, input_1.getText()));
+	    	break;
+	    	case "nurse":
+	    		results.append(DatabaseConnect.NursesPatients(con));
+	    	break;
+	    	case "blood":
+	    		results.append(DatabaseConnect.numBloodTypes(con));
+	    	break;
+	    	case "specFound":
+	    		results.append(DatabaseConnect.docSpecialization(con, input_1.getText()));
+	    	break;
+	    	case "dateFound":
+	    		results.append(DatabaseConnect.doctorsWorking(con, input_1.getText()));
+	    	break;
+	    	}
+	    	
 	    	mainframe.getContentPane().add(results);
 	    	results.setBackground(Color.lightGray);
 	    	mainframe.revalidate();
@@ -257,6 +271,8 @@ class DB_gui implements ActionListener {
 	}
 	
 	public static void main(String args[]) throws IOException{
+		
 		DB_gui DBProject = new DB_gui();//DB_gui object to run the gui
+		
  }
 }
