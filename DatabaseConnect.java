@@ -3,14 +3,6 @@ import java.sql.*;
 import java.util.Date;
 
 public class DatabaseConnect {
-    String url;
-    Connection con;
-
-    public DatabaseConnect() throws SQLException {
-        url = "jdbc:mysql://localhost:3306/hospitaldb";
-        con = DriverManager.getConnection(url, "root", "admin");
-    }
-
     //public static void main(String[] args) throws SQLException, IOException {
 
         //connecting to local database
