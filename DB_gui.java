@@ -168,7 +168,7 @@ class DB_gui implements ActionListener{
             input_1 = new JTextField("Eg. John Smith",25);
             input_2 = new JTextField("Enter a 10-digit number",25);
             input_3 = new JTextField("Enter a 9-digit number", 25);
-            input_4 = new JTextField("MM-DD-YYYY", 25);
+            input_4 = new JTextField("YYYY-MM-DD", 25);
 
             //add text fields and labels
             input.add(name); 	input.add(input_1);
