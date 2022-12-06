@@ -2,12 +2,18 @@ import java.sql.*;
 import java.util.Date;
 
 public class DatabaseConnect {
+    String url;
+    Connection con;
 
-    public static void main(String[] args) throws SQLException {
+    public DatabaseConnect() throws SQLException {
+        url = "jdbc:mysql://localhost:3306/hospitaldb";
+        con = DriverManager.getConnection(url, "root", "admin");
+    }
+    //public static void main(String[] args) throws SQLException {
 
         //connecting to local database
-        String url = "jdbc:mysql://localhost:3306/hospitaldb";
-        Connection con = DriverManager.getConnection(url, "root", "admin");
+        //String url = "jdbc:mysql://localhost:3306/hospitaldb";
+        //Connection con = DriverManager.getConnection(url, "root", "admin");
 
         //sample insert and delete patient queries
         //insertPatient(con, "John Doe", 1234567890, 100000000, "11/12/2022");
@@ -38,8 +44,8 @@ public class DatabaseConnect {
 
         //docSpecialization(con, "pulmonology");
 
-        con.close();
-    }
+        //con.close();
+    //}
 
     //function to insert a patient
     //date needs to be in form MM/DD/YYYY
