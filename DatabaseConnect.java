@@ -61,6 +61,14 @@ public class DatabaseConnect {
         ptDelete.setString(1, SSN);
         ptDelete.execute();
     }
+    
+    //finds patient using their patientID
+    public static ResultSet findPatient(Connection con, String patientID) throws SQLException {
+        PreparedStatement findPt = con.prepareStatement("SELECT PatientID, SSN, PatientName, DOB FROM patients where PatientID = ?");
+        findPt.setString(1, patientID);
+        ResultSet result = findPt.executeQuery();
+        return result;
+    }
 
     public static void updateDoctorPhone(Connection con, String docID, String newPhoneNum) throws SQLException {
         PreparedStatement updateDoctorPhone = con.prepareStatement("UPDATE DOCTORS SET PhoneNum = ? where doctorID = ? ");
