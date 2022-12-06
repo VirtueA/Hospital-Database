@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.sql.*;
 import java.util.Date;
 
@@ -9,11 +10,14 @@ public class DatabaseConnect {
         url = "jdbc:mysql://localhost:3306/hospitaldb";
         con = DriverManager.getConnection(url, "root", "admin");
     }
-    //public static void main(String[] args) throws SQLException {
+
+    //public static void main(String[] args) throws SQLException, IOException {
 
         //connecting to local database
         //String url = "jdbc:mysql://localhost:3306/hospitaldb";
         //Connection con = DriverManager.getConnection(url, "root", "admin");
+
+        //DB_gui DBProject = new DB_gui();//DB_gui object to run the gui
 
         //sample insert and delete patient queries
         //insertPatient(con, "John Doe", 1234567890, 100000000, "11/12/2022");
@@ -45,7 +49,7 @@ public class DatabaseConnect {
         //docSpecialization(con, "pulmonology");
 
         //con.close();
-    //}
+   // }
 
     //function to insert a patient
     //date needs to be in form MM/DD/YYYY
@@ -67,7 +71,7 @@ public class DatabaseConnect {
         ptDelete.setString(1, SSN);
         ptDelete.execute();
     }
-    
+
     //finds patient using their patientID
     public static ResultSet findPatient(Connection con, String patientID) throws SQLException {
         PreparedStatement findPt = con.prepareStatement("SELECT PatientID, SSN, PatientName, DOB FROM patients where PatientID = ?");
