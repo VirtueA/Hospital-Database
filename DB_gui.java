@@ -30,6 +30,12 @@ class DB_gui implements ActionListener{
     JButton nurse = new JButton("SHOW NURSE INFO");
     JButton date = new JButton("DOCTORS ON SCHEDULE");
     JButton quit = new JButton("Quit");
+    
+    //THE INPUT FIELDS WILL BE USED TO GENERATE QUERIES********
+    JTextField input_1 = new JTextField();
+    JTextField input_2 = new JTextField();
+    JTextField input_3 = new JTextField();
+    JTextField input_4 = new JTextField();
 
     //constructor for the class frame
     DB_gui() throws IOException{
@@ -131,12 +137,7 @@ class DB_gui implements ActionListener{
 
         //create a panel and some text fields for input
         mainframe.getContentPane().add(BorderLayout.CENTER, input);
-        JTextField input_1 = new JTextField();//THE INPUT FIELDS WILL BE USED TO GENERATE QUERIES********
-        JTextField input_2 = new JTextField();
-        JTextField input_3 = new JTextField();
-        JTextField input_4 = new JTextField();
-
-
+        
         //get the button that was pressed
         String buttonPressed = click.getActionCommand();
 
